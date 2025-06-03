@@ -1,0 +1,74 @@
+*{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+*{
+    margin: 0;
+    padding: 0;
+
+}
+.cl-internal-1tpvhd8{
+    font-size: 28px;
+    font-weight: 700;
+    background-color: #091a44;
+    background-clip: text;
+}
+.cl-internal-1dauvpw{
+    display: none;
+}
+.cl-internal-4x6jej{
+    background: white;
+}
+.cl-internal-1p733cp{
+    box-shadow: none;
+}
+.cl-internal-15di0mo , .cl-internal-xexz24{
+    font-size: 14px;
+}
+.cl-internal-2gzuzc{
+    width: 24px;
+    height: 24px;
+}
+.cl-internal-1051a5p{
+    color: #666;
+    font-size: 16px;
+}
+.cl-internal-1c7fjmu{
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: 500;
+}
+
+.cl-internal-172wsa5 , .cl-internal-1gh8c2t {
+    width: 100%;
+    padding: 15px 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+.cl-internal-1odp14a{
+    padding: 15px;
+    background-color: #091a44;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+.cl-internal-1c4ikgf{
+    display: none;
+}
+.cl-internal-1odp14a[data-variant="solid"]::after {
+    display: none;
+}
+.cl-internal-1odp14a:hover{
+    background-color: #091a44;
+}
+.cl-internal-1hp5nqm{
+    display: none;
+}
