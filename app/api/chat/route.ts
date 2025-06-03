@@ -1,4 +1,4 @@
-import { OpenAIStream, StreamingTextResponse } from 'ai'
+import { OpenAIStream, StreamingTextResponse  } from 'ai'
 import { Configuration, OpenAIApi } from 'openai-edge'
 
 // Create an OpenAI API client (that's edge friendly!)
