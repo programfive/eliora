@@ -4,12 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "postinstall": "prisma generate",
+    "db:generate": "prisma generate",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.20.1",
+    "@prisma/client": "^6.9.0",
     "ai": "^2.1.29",
     "next": "15.3.2",
     "openai-edge": "^1.2.2",
@@ -24,6 +27,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
+    "prisma": "^6.9.0",
+    "tsx": "^4.19.4",
     "typescript": "^5"
   }
 }

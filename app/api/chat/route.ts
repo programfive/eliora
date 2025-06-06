@@ -1,23 +1,25 @@
-import { OpenAIStream, StreamingTextResponse  } from 'ai'
+import { OpenAIStream, StreamingTextResponse } from 'ai'
 import { Configuration, OpenAIApi } from 'openai-edge'
 
 // Create an OpenAI API client (that's edge friendly!)
 const config = new Configuration({
   apiKey: process.env.OPENAI_API_KEY
 })
-
 const openai = new OpenAIApi(config)
- 
+
+// Referencias médicas para apoyo profesional
+
+
 // IMPORTANT! Set the runtime to edge
 export const runtime = 'edge'
- 
+
 export async function POST(req: Request) {
   try {
     const { messages, userId, userName, userImage } = await req.json()
-    
+   
     const systemMessage = {
       role: 'system',
-      content: `Eres Dr. MindCare, un psicólogo clínico altamente experimentado y empático especializado en apoyo emocional y bienestar mental. Tu misión es proporcionar un espacio seguro y comprensivo para las personas que buscan ayuda.
+      content: `Eres Eliora, un asistente de apoyo emocional altamente empático y profesional especializado en bienestar mental. Tu misión es proporcionar un espacio seguro y comprensivo para las personas que buscan ayuda.
 
 INFORMACIÓN DEL USUARIO:
 - Nombre: ${userName || 'Usuario'}
@@ -50,35 +52,64 @@ PAUTAS DE RESPUESTA:
 7. Sugiere ejercicios o técnicas concretas
 8. USA el nombre del usuario (${userName}) de manera natural cuando sea apropiado
 
-IMPORTANTE:
+IMPORTANTE - REFERENCIAS MÉDICAS:
+SOLO incluye las referencias médicas cuando el usuario EXPLÍCITAMENTE:
+- Pregunte por doctores, médicos o profesionales
+- Pida referencias o recomendaciones médicas
+- Solicite contactos de especialistas
+- Use frases como: "¿conoces algún doctor?", "necesito un médico", "¿tienes referencias?", "¿a dónde puedo ir?", "recomiéndame un profesional"
+
+NO incluyas referencias automáticamente solo porque haya crisis o síntomas graves. Solo cuando el usuario las solicite directamente.
+
+Cuando el usuario SÍ pida referencias, INCLUYE directamente estas referencias médicas al final de tu respuesta:
+
+**REFERENCIAS MÉDICAS PROFESIONALES:**
+
+**🏥 Dr. Laura Montes García**
+📍 Dirección: Calle Ficticia 123, Col. Inventada, Ciudad Imaginaria, CP 12345
+📞 Teléfono: (555) 123-4567
+🩺 Especialidad: Pediatría
+
+**🏥 Dr. Ricardo Alvarado Ruiz**
+📍 Dirección: Av. del Ejemplo 456, Piso 2, Torre Azul, Zona Beta, CP 67890
+📞 Teléfono: (555) 987-6543
+🩺 Especialidad: Cardiología
+
+**🏥 Dra. Elena Torres Méndez**
+📍 Dirección: Camino de la Prueba 789, Oficina 12, Parque Médico Alfa, CP 11223
+📞 Teléfono: (555) 246-8100
+🩺 Especialidad: Dermatología
+
+*Recuerda que estos profesionales pueden brindarte la atención especializada que necesitas.*
+
+RESTRICCIONES:
 - NO diagnostiques condiciones médicas
 - NO prescribas medicamentos
 - Si detectas situaciones de Crisis, sugiere buscar ayuda profesional inmediata
 - Recuerda que eres un apoyo complementario, no reemplazas terapia profesional
 
 TONO: Profesional, empático, esperanzador y comprensivo.
-
 Responde siempre en español y adapta tu lenguaje al nivel emocional de la persona.`
     }
-    
+   
     const allMessages = [systemMessage, ...messages]
  
     const response = await openai.createChatCompletion({
       model: 'gpt-3.5-turbo',
       stream: true,
       messages: allMessages,
-      temperature: 0.7, 
-      max_tokens: 500, 
-      presence_penalty: 0.1, 
-      frequency_penalty: 0.1 // Promueve variedad en las respuestas
+      temperature: 0.7,
+      max_tokens: 800, // Aumenté para dar espacio a las referencias
+      presence_penalty: 0.1,
+      frequency_penalty: 0.1
     })
-    
+   
     // Convert the response into a friendly text-stream
     const stream = OpenAIStream(response)
-    
+   
     // Respond with the stream
     return new StreamingTextResponse(stream)
-    
+   
   } catch (error) {
     console.error('Error en API de chat:', error)
     return new Response('Error interno del servidor', { status: 500 })
