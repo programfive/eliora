@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 export const checkUser = async () => {
   try {
     const { userId } = await auth();
+    console.log(userId);
     if (!userId) {
       return null;
     }
@@ -20,13 +21,16 @@ export const checkUser = async () => {
         clerkId: userId,
       },
     });
+  
 
     if (loggedInUser) return loggedInUser;
 
     const newUser = await db.user.create({
       data: {
         clerkId: user.id,
-        name: `${user.firstName} ${user.lastName}`.trim(),
+        name: user.firstName && user.lastName 
+          ? `${user.firstName} ${user.lastName}`.trim()
+          : user.firstName || user.lastName || null,
       },
     });
 

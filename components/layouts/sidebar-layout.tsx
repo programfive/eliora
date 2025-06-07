@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import styles from '@/styles/index.module.css';
 import { useUser } from '@clerk/nextjs';
 import {  icons } from '@/constants/index';
-import Image from "next/image";
 
 import { SignInButton, SignOutButton } from "@clerk/nextjs";
 import { FaHome, FaGraduationCap, FaHandHoldingUsd, FaUserGraduate, FaUniversity, FaUserPlus, FaQuestionCircle, FaBars, FaTimes, FaRobot } from 'react-icons/fa';
@@ -112,14 +111,10 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
             id="sidebar"
           >
             <div className={styles.logo}>
-              <Image
-                src="http://unibeth.edu.bo/documentos/20200714173736.png"
-                alt="Logo UNIBETH"
+              <img 
+                src="http://unibeth.edu.bo/documentos/20200714173736.png" 
+                alt="Logo UNIBETH" 
                 className={styles.logoImg}
-                width={80}
-                height={80}
-                style={{ objectFit: "contain" }}
-                priority
               />
               <h2>UNIBETH</h2>
               <p>Universidad Bethesda</p>

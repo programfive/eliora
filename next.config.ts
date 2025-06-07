@@ -1,4 +1,3 @@
-
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -6,6 +5,7 @@ const nextConfig: NextConfig = {
     OPENAI_API_KEY: process.env.NEXT_PUBLIC_OPENAI_KEY,
   },
   images: {
+    domains: ['img.clerk.com'],
     remotePatterns: [
       {
         protocol: 'http',
@@ -15,7 +15,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'scontent.fvvi1-1.fna.fbcdn.net',
+        hostname: '*.fbcdn.net', // Permite todos los subdominios de Facebook CDN
         port: '',
         pathname: '/**',
       },

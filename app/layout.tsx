@@ -29,8 +29,8 @@ export default async function RootLayout({
   //   return null;
   // }
   return (
-    <ClerkProvider localization={localization}>
-      <html lang="es">
+    <ClerkProvider localization={localization} >
+      <html lang="es" suppressHydrationWarning={true}>
         <head>
           <link
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"

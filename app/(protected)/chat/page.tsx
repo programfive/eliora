@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useEffect, KeyboardEvent } from "react";
+import { useRef, useEffect, KeyboardEvent, useState } from "react";
 import { UserButton, useUser } from "@clerk/nextjs";
 import styles from "@/styles/chat.module.css";
 import Image from "next/image";
@@ -14,11 +14,14 @@ import {
 } from "react-icons/fa";
 import { useChat } from "ai/react";
 import { suggestionQuestions } from "@/constants";
+import { createNewChat, registerChatEntrance, saveUserMessage } from "@/actions/chat-actions";
 
 
 export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [currentChatId, setCurrentChatId] = useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const { 
     messages, 
@@ -30,9 +33,39 @@ export default function ChatPage() {
   } = useChat({
     api: '/api/chat',
     initialMessages: [],
+    onFinish: async (message) => {
+      // Guardar mensaje del usuario cuando el AI responde
+      if (currentChatId && messages.length > 0) {
+        const lastUserMessage = messages[messages.length - 1];
+        if (lastUserMessage.role === 'user') {
+          try {
+            await saveUserMessage(lastUserMessage.content, currentChatId);
+          } catch (error) {
+            console.error('Error guardando mensaje:', error);
+          }
+        }
+      }
+    }
   });
   
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
+  
+  // Inicializar chat y registrar entrada
+  useEffect(() => {
+    const initializeChat = async () => {
+      if (isLoaded && user && !isInitialized) {
+        try {
+          const { chat } = await registerChatEntrance();
+          setCurrentChatId(chat.id);
+          setIsInitialized(true);
+        } catch (error) {
+          console.error('Error inicializando chat:', error);
+        }
+      }
+    };
+
+    initializeChat();
+  }, [isLoaded, user, isInitialized]);
   
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -42,21 +75,38 @@ export default function ChatPage() {
     scrollToBottom();
   }, [messages, isLoading]);
 
-
-  const handleSuggestionClick = (suggestionText: string) => {
-    append({
-      role: 'user',
-      content: suggestionText,
-    });
+  const handleSuggestionClick = async (suggestionText: string) => {
+    if (!currentChatId) return;
+    
+    try {
+      // Agregar mensaje al chat UI
+      await append({
+        role: 'user',
+        content: suggestionText,
+      });
+      
+      // Guardar en la base de datos
+      await saveUserMessage(suggestionText, currentChatId);
+    } catch (error) {
+      console.error('Error enviando sugerencia:', error);
+    }
   };
 
-  const handleSendMessage = () => {
-    if (!input.trim() || isLoading) return;
+  const handleSendMessage = async () => {
+    if (!input.trim() || isLoading || !currentChatId) return;
     
-    const form = textareaRef.current?.closest('form');
-    if (form) {
-      const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
-      form.dispatchEvent(submitEvent);
+    try {
+      // Guardar mensaje antes de enviarlo
+      await saveUserMessage(input, currentChatId);
+      
+      // Enviar al chat
+      const form = textareaRef.current?.closest('form');
+      if (form) {
+        const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+        form.dispatchEvent(submitEvent);
+      }
+    } catch (error) {
+      console.error('Error enviando mensaje:', error);
     }
   };
 
@@ -67,6 +117,24 @@ export default function ChatPage() {
     }
   };
 
+  const handleNewChat = async () => {
+    try {
+      const newChat = await createNewChat();
+      setCurrentChatId(newChat.id);
+      // Opcional: limpiar mensajes actuales
+      window.location.reload(); // O usar una función para limpiar el estado del chat
+    } catch (error) {
+      console.error('Error creando nuevo chat:', error);
+    }
+  };
+
+  if (!isLoaded || !isInitialized) {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingSpinner}>Cargando...</div>
+      </div>
+    );
+  }
 
   return (
     <section className={styles.chatContainer}>
@@ -80,7 +148,16 @@ export default function ChatPage() {
             <p className={styles.subtitle}>Aquí para escucharte y apoyarte</p>
           </div>
         </div>
-        <UserButton />
+        <div className={styles.headerActions}>
+          <button 
+            onClick={handleNewChat}
+            className={styles.newChatBtn}
+            title="Nuevo Chat"
+          >
+            <FaPlus />
+          </button>
+          <UserButton />
+        </div>
       </div>
 
       <div className={styles.messagesContainer}>
@@ -174,7 +251,7 @@ export default function ChatPage() {
             placeholder="Comparte lo que sientes..."
             className={styles.messageInput}
             rows={1}
-            disabled={isLoading}
+            disabled={isLoading || !currentChatId}
           />
 
           <button type="button" className={styles.voiceBtn}>
@@ -184,7 +261,7 @@ export default function ChatPage() {
           <button
             type="submit"
             className={styles.sendBtn}
-            disabled={!input.trim() || isLoading}
+            disabled={!input.trim() || isLoading || !currentChatId}
           >
             <FaPaperPlane />
           </button>
