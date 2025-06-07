@@ -1,0 +1,5 @@
+node_modules/
+.next/
+prisma/generated/
+**/prisma/client/**
+**/@prisma/client/**
