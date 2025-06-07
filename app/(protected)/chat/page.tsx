@@ -2,6 +2,7 @@
 import { useRef, useEffect, KeyboardEvent } from "react";
 import { UserButton, useUser } from "@clerk/nextjs";
 import styles from "@/styles/chat.module.css";
+import Image from "next/image";
 
 import {
   FaRobot,
@@ -117,10 +118,13 @@ export default function ChatPage() {
                   {message.role === 'assistant' ? (
                     <FaRobot />
                   ) : user?.imageUrl ? (
-                    <img 
-                      src={user.imageUrl} 
-                      alt="Usuario" 
+                    <Image
+                      src={user.imageUrl}
+                      alt="Usuario"
                       className={styles.userAvatar}
+                      width={40}
+                      height={40}
+                      style={{ objectFit: "cover" }}
                     />
                   ) : (
                     <FaUser />

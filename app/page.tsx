@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import styles from '@/styles/index.module.css';
 import { carouselSlides, programs, icons } from '../constants';
 import Link from 'next/link';
+import Image from "next/image";
+
 
 const HomePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -25,7 +27,7 @@ const HomePage: React.FC = () => {
       setCurrentSlide((prev) => (prev + 1) % carouselSlides.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, [carouselSlides.length]);
+  }, []);
 
   // Escape key handler for modal
   useEffect(() => {
@@ -78,7 +80,15 @@ const HomePage: React.FC = () => {
                       key={slide.id}
                       className={`${styles.carouselSlide} ${index === currentSlide ? styles.active : ''}`}
                     >
-                      <img src={slide.image} alt={slide.title} />
+                      <Image
+                        src={slide.image}
+                        alt={slide.title}
+                        width={800}
+                        height={400}
+                        className={styles.carouselImage}
+                        style={{ objectFit: "cover", width: "100%", height: "auto" }}
+                        priority={index === currentSlide}
+                      />
                       <div className={styles.slideOverlay}>
                         <h3>{slide.title}</h3>
                         <p>{slide.description}</p>
