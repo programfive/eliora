@@ -206,7 +206,7 @@ export default function ChatStats() {
           </h4>
           <div className={styles.emotionalGrid}>
             {stats.emotionalStats.map((emotion, index) => (
-              <div key={emotion.emotion} className={styles.emotionalCard}>
+              <div key={index} className={styles.emotionalCard}>
                 <h5>{emotionTranslations[emotion.emotion as keyof typeof emotionTranslations] || emotion.emotion}</h5>
                 <p className={styles.emotionalCount}>{formatNumber(emotion._count.emotion)}</p>
               </div>
@@ -223,7 +223,7 @@ export default function ChatStats() {
             Tendencias Emocionales (Última Semana)
           </h4>
           <div className={styles.trendsGrid}>
-            {emotionalTrends.map((trend, index) => (
+            {emotionalTrends.map((trend) => (
               <div key={trend.emotion} className={styles.trendCard}>
                 <div className={styles.trendHeader}>
                   <h5>{emotionTranslations[trend.emotion as keyof typeof emotionTranslations] || trend.emotion}</h5>

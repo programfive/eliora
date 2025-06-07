@@ -33,7 +33,7 @@ export default function ChatPage() {
   } = useChat({
     api: '/api/chat',
     initialMessages: [],
-    onFinish: async (message) => {
+    onFinish: async () => {
       // Guardar mensaje del usuario cuando el AI responde
       if (currentChatId && messages.length > 0) {
         const lastUserMessage = messages[messages.length - 1];
