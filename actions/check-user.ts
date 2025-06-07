@@ -1,10 +1,9 @@
-"use server";
 import { auth } from "@clerk/nextjs/server";
 import { currentUser } from '@clerk/nextjs/server';
 import { db } from "@/lib/db";
-import { User } from "@/lib/generated/prisma";
 
-export const checkUser = async (): Promise<User | null> => {
+
+export const checkUser = async () => {
   try {
     const { userId } = await auth();
     if (!userId) {
@@ -15,7 +14,6 @@ export const checkUser = async (): Promise<User | null> => {
     if (!user) {
       return null;
     }
-
 
     const loggedInUser = await db.user.findUnique({
       where: {
@@ -29,7 +27,6 @@ export const checkUser = async (): Promise<User | null> => {
       data: {
         clerkId: user.id,
         name: `${user.firstName} ${user.lastName}`.trim(),
-        isFirstTime:true,
       },
     });
 
