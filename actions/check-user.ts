@@ -28,9 +28,7 @@ export const checkUser = async () => {
     const newUser = await db.user.create({
       data: {
         clerkId: user.id,
-        name: user.firstName && user.lastName 
-          ? `${user.firstName} ${user.lastName}`.trim()
-          : user.firstName || user.lastName || null,
+        name: `${user.firstName} ${user.lastName}`.trim(),
       },
     });
 
