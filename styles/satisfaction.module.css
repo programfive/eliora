@@ -1,0 +1,52 @@
+/* satisfaction-form.module.css */
+.formContainer {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.formTitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #1a237e;
+  text-align: center;
+}
+
+.label {
+  display: block;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #cfd8dc;
+  margin-top: 0.3rem;
+  font-size: 1rem;
+}
+
+.button {
+  width: 100%;
+  padding: 0.7rem;
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.button:disabled {
+  background: #90caf9;
+  cursor: not-allowed;
+}

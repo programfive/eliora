@@ -13,9 +13,11 @@ import {
   FiHeart,
   FiRefreshCw
 } from 'react-icons/fi'
-
+import { redirect } from 'next/navigation'
 import styles from '@/styles/stats.module.css'
 import { getChatStats, getEmotionalTrends } from '@/actions/chat-actions'
+import { useUser } from '@clerk/nextjs'
+import StatsChart from '@/components/stats-chart'
 
 interface StatsData {
   totalUsers: number
@@ -28,6 +30,19 @@ interface StatsData {
   }>
   avgSessionTime: number
   activeUsersToday: number
+  activeUsersThisMonth: number
+  activeUsersThisYear: number
+  messagesByHour: Array<{
+    createdAt: Date
+    _count: { createdAt: number }
+  }>
+  avgResponseTime: number
+  satisfactionStats: {
+    overall: number
+    helpfulness: number
+    empathy: number
+    clarity: number
+  }
 }
 
 interface EmotionalTrend {
@@ -48,6 +63,13 @@ const emotionTranslations = {
 } as const
 
 export default function ChatStats() {
+  const { user } = useUser()
+
+
+  const isAdminrole = user?.publicMetadata?.role === "admin"
+  if (!isAdminrole) {
+    redirect('/')
+  }
   const [stats, setStats] = useState<StatsData | null>(null)
   const [emotionalTrends, setEmotionalTrends] = useState<EmotionalTrend[]>([])
   const [loading, setLoading] = useState(true)
@@ -88,15 +110,6 @@ export default function ChatStats() {
     return new Intl.NumberFormat('es-ES').format(num)
   }
 
-  const formatTime = (minutes: number) => {
-    const hours = Math.floor(minutes / 60)
-    const mins = minutes % 60
-    
-    if (hours > 0) {
-      return `${hours}h ${mins}m`
-    }
-    return `${mins}m`
-  }
 
   if (loading) {
     return (
@@ -128,6 +141,14 @@ export default function ChatStats() {
   }
 
   if (!stats) return null
+
+  // Ejemplo de datos (reemplaza con tus datos reales)
+  const activeUsersByDay = [
+    { time: "2024-06-01", value: 10 },
+    { time: "2024-06-02", value: 15 },
+    { time: "2024-06-03", value: 20 },
+    // ...
+  ];
 
   return (
     <div className={styles.statsContainer}>
@@ -185,15 +206,53 @@ export default function ChatStats() {
             <FiActivity />
           </div>
           <h4>Usuarios Activos Hoy</h4>
-          <p className={styles.statNumber}>{formatNumber(stats.activeUsersToday)}</p>
+          <p className={styles.statNumber}>{formatNumber(stats.activeUsersToday || 0)}</p>
         </div>
 
         <div className={styles.statCard}>
           <div className={styles.statIcon}>
             <FiClock />
           </div>
-          <h4>Tiempo Promedio de Sesión</h4>
-          <p className={styles.statNumber}>{formatTime(stats.avgSessionTime)}</p>
+          <h4>Usuarios Activos Este mes</h4>
+          <p className={styles.statNumber}>{formatNumber(stats.activeUsersThisMonth || 0)}</p>
+        </div>
+
+        <div className={styles.statCard}>
+          <div className={styles.statIcon}>
+            <FiClock />
+          </div>
+          <h4>Usuarios Activos Año</h4>
+          <p className={styles.statNumber}>{formatNumber(stats.activeUsersThisYear)}</p>
+        </div>
+      </div>
+      <StatsChart
+        data={activeUsersByDay}
+        title="Usuarios Activos por Día"
+        color="#2563eb"
+      />
+      {/* Estadísticas de satisfacción */}
+      <div className={styles.satisfactionSection}>
+        <h4 className={styles.sectionTitle}>
+          <FiHeart className={styles.sectionIcon} />
+          Satisfacción del Usuario
+        </h4>
+        <div className={styles.satisfactionGrid}>
+          <div className={styles.satisfactionCard}>
+            <h5>General</h5>
+            <p className={styles.satisfactionRating}>{stats.satisfactionStats.overall.toFixed(1)}/5</p>
+          </div>
+          <div className={styles.satisfactionCard}>
+            <h5>Utilidad</h5>
+            <p className={styles.satisfactionRating}>{stats.satisfactionStats.helpfulness.toFixed(1)}/5</p>
+          </div>
+          <div className={styles.satisfactionCard}>
+            <h5>Empatía</h5>
+            <p className={styles.satisfactionRating}>{stats.satisfactionStats.empathy.toFixed(1)}/5</p>
+          </div>
+          <div className={styles.satisfactionCard}>
+            <h5>Claridad</h5>
+            <p className={styles.satisfactionRating}>{stats.satisfactionStats.clarity.toFixed(1)}/5</p>
+          </div>
         </div>
       </div>
 
@@ -241,6 +300,7 @@ export default function ChatStats() {
           </div>
         </div>
       )}
+
     </div>
   )
 }

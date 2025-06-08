@@ -4,7 +4,6 @@ import {
 } from '@clerk/nextjs'
 import "./global.css"
 import SidebarLayout from '@/components/layouts/sidebar-layout';
-import { checkUser } from '@/actions/check-user';
 
 export const metadata: Metadata = {
   title: 'Clerk Next.js Quickstart',
@@ -23,8 +22,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const user = await checkUser();
-  console.log(user);
+ 
+
   // if(!user){
   //   return null;
   // }
@@ -38,7 +37,7 @@ export default async function RootLayout({
           />
         </head>
         <body className={` antialiased`}>
-         <SidebarLayout>
+         <SidebarLayout >
             {children}
           </SidebarLayout>
         </body>

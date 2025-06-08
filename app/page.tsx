@@ -4,14 +4,17 @@ import styles from '@/styles/index.module.css';
 import { carouselSlides, programs, icons } from '../constants';
 import Link from 'next/link';
 import Image from "next/image";
-
+// import { useUser } from "@clerk/nextjs"
 
 const HomePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoginModalActive, setIsLoginModalActive] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  // const { user } = useUser()
 
- 
+
+  // const isAdminrole = user?.publicMetadata?.role === "admin"
+
 
   // Loading effect
   useEffect(() => {

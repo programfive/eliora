@@ -521,3 +521,65 @@
       background: rgba(255, 255, 255, 0.1);
     }
   }
+
+.satisfactionSection {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.satisfactionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.satisfactionCard {
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 0.5rem;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.satisfactionCard:hover {
+  transform: translateY(-2px);
+}
+
+.satisfactionCard h5 {
+  color: #4b5563;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.satisfactionRating {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.chartCard {
+  background: rgba(255,255,255,0.95);
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  padding: 2rem 1rem;
+  margin-bottom: 2rem;
+}
+
+.chartTitle {
+  text-align: center;
+  color: #2563eb;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  letter-spacing: 0.5px;
+}
+
+.chartContainer {
+  width: 100%;
+  height: 300px;
+  min-height: 200px;
+}

@@ -3,6 +3,7 @@ import { useRef, useEffect, KeyboardEvent, useState } from "react";
 import { UserButton, useUser } from "@clerk/nextjs";
 import styles from "@/styles/chat.module.css";
 import Image from "next/image";
+import SatisfactionForm from "@/components/satisfaction-form";
 
 import {
   FaRobot,
@@ -14,7 +15,7 @@ import {
 } from "react-icons/fa";
 import { useChat } from "ai/react";
 import { suggestionQuestions } from "@/constants";
-import { createNewChat, registerChatEntrance, saveUserMessage } from "@/actions/chat-actions";
+import {  registerChatEntrance, saveUserMessage, endUserSession } from "@/actions/chat-actions";
 
 
 export default function ChatPage() {
@@ -22,6 +23,8 @@ export default function ChatPage() {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [currentChatId, setCurrentChatId] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [showSatisfactionForm, setShowSatisfactionForm] = useState(false);
 
   const { 
     messages, 
@@ -55,8 +58,9 @@ export default function ChatPage() {
     const initializeChat = async () => {
       if (isLoaded && user && !isInitialized) {
         try {
-          const { chat } = await registerChatEntrance();
+          const { chat, session } = await registerChatEntrance();
           setCurrentChatId(chat.id);
+          setSessionId(session.id);
           setIsInitialized(true);
         } catch (error) {
           console.error('Error inicializando chat:', error);
@@ -118,20 +122,48 @@ export default function ChatPage() {
   };
 
   const handleNewChat = async () => {
-    try {
-      const newChat = await createNewChat();
-      setCurrentChatId(newChat.id);
-      // Opcional: limpiar mensajes actuales
-      window.location.reload(); // O usar una función para limpiar el estado del chat
-    } catch (error) {
-      console.error('Error creando nuevo chat:', error);
-    }
+    setShowSatisfactionForm(true);
   };
+
+  const handleSatisfactionSubmitted = () => {
+    setShowSatisfactionForm(false);
+    window.location.reload();
+  };
+
+  useEffect(() => {
+    if (!sessionId) return;
+
+    const handleEndSession = async () => {
+      try {
+        await endUserSession(sessionId);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    window.addEventListener("beforeunload", handleEndSession);
+
+    // Si usas Next.js router, también puedes escuchar cambios de ruta:
+    // router.events.on('routeChangeStart', handleEndSession);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleEndSession);
+      // router.events.off('routeChangeStart', handleEndSession);
+    };
+  }, [sessionId]);
 
   if (!isLoaded || !isInitialized) {
     return (
       <div className={styles.loadingContainer}>
         <div className={styles.loadingSpinner}>Cargando...</div>
+      </div>
+    );
+  }
+
+  if (showSatisfactionForm && currentChatId) {
+    return (
+      <div className={styles.satisfactionFormContainer}>
+        <SatisfactionForm chatId={currentChatId} onSubmitted={handleSatisfactionSubmitted} />
       </div>
     );
   }

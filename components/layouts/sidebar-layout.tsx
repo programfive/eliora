@@ -6,7 +6,7 @@ import {  icons } from '@/constants/index';
 import Image from 'next/image';
 
 import { SignInButton, SignOutButton } from "@clerk/nextjs";
-import { FaHome, FaGraduationCap, FaHandHoldingUsd, FaUserGraduate, FaUniversity, FaUserPlus, FaQuestionCircle, FaBars, FaTimes, FaRobot } from 'react-icons/fa';
+import { FaHome, FaGraduationCap, FaHandHoldingUsd, FaUserGraduate, FaUniversity, FaUserPlus, FaQuestionCircle, FaBars, FaTimes, FaRobot, FaChartLine } from 'react-icons/fa';
 import Link from 'next/link';
 
 
@@ -20,7 +20,9 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
   const [isLoginModalActive, setIsLoginModalActive] = useState(false);
 
 
-  const {isSignedIn} = useUser();
+  
+  const {isSignedIn,user} = useUser();
+  const isAdminrole = user?.publicMetadata?.role === "admin"
 
   // Loading effect
   useEffect(() => {
@@ -133,7 +135,11 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
               <li><Link href="#"><FaUniversity style={{marginRight:"5px"}}/> Portal Unibeth</Link></li>
               <li><Link href="#"><FaUserPlus style={{marginRight:"5px"}}/> Inscripciones</Link></li>
               <li><Link href="/chat"><FaRobot style={{marginRight:"5px"}}/> Chat Psicologico</Link></li>
-              
+              {isAdminrole && (
+                <li><Link href="/statistics"><FaChartLine style={{marginRight:"5px"}}/> Estadisticas del chat</Link></li>
+              )}
+
+    
               <li>
                 <Link href="#" onClick={(e) => { e.preventDefault(); openLoginModal(); }}>
                   <FaQuestionCircle style={{marginRight:"5px"}}/> Consultas
