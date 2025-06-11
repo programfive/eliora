@@ -56,12 +56,6 @@ import {
     },
     {
       id: 4,
-      image: "/images/4.E",
-      title: "Bethesda University (EE.UU)",
-      description: "Convenio internacional en Anaheim, California"
-    },
-    {
-      id: 5,
       image: "/images/3.jpg",
       title: "Hansei University",
       description: "Alianza académica con Corea del Sur"

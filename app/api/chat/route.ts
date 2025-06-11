@@ -7,7 +7,6 @@ const config = new Configuration({
 })
 const openai = new OpenAIApi(config)
 
-// Referencias médicas para apoyo profesional
 
 
 // IMPORTANT! Set the runtime to edge
@@ -99,7 +98,7 @@ Responde siempre en español y adapta tu lenguaje al nivel emocional de la perso
       stream: true,
       messages: allMessages,
       temperature: 0.7,
-      max_tokens: 800, // Aumenté para dar espacio a las referencias
+      max_tokens: 800, 
       presence_penalty: 0.1,
       frequency_penalty: 0.1
     })
