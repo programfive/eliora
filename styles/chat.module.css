@@ -25,13 +25,13 @@
   .botIcon {
     width: 50px;
     height: 50px;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgb(255, 255, 255);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 20px;
-    color: white;
+    color: rgb(197, 21, 21);
   }
   
   .chatTitle h1 {
@@ -67,7 +67,7 @@
   .welcomeIcon {
     width: 120px;
     height: 120px;
-    background: linear-gradient(135deg, #091a44, #667eea);
+    background: linear-gradient(135deg, #354409, #667eea);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -81,9 +81,9 @@
   .welcomeTitle {
     font-size: 32px;
     font-weight: 700;
-    background:#091a44;
+    background:#ffffff;
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-text-fill-color:#091a44 ;
     background-clip: text;
     margin-bottom: 15px;
   }
@@ -140,7 +140,7 @@
   }
   
   .suggestionIcon {
-    font-size: 24px;
+    font-size: 15px;
     margin-bottom: 12px;
   }
   
@@ -204,13 +204,13 @@
   }
   
   .message.bot .messageContent {
-    background: #f8f9fa;
+    background: #98b9da;
     border-bottom-left-radius: 5px;
     border: 1px solid #e9ecef;
   }
   
   .message.user .messageContent {
-    background:  #667eea;
+    background:  #091a44;
     color: white;
     border-bottom-right-radius: 5px;
   }
@@ -267,8 +267,9 @@
   /* Input Container */
   .inputContainer {
     padding: 20px;
-    background: white;
+    background: #091a44;
     border-top: 1px solid #e9ecef;
+    border-radius: 20px;
   }
   
   .inputWrapper {

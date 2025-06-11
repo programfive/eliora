@@ -1,9 +1,7 @@
 "use client";
-import { useRef, useEffect, KeyboardEvent, useState } from "react";
+import { useRef, useEffect, KeyboardEvent } from "react";
 import { UserButton, useUser } from "@clerk/nextjs";
 import styles from "@/styles/chat.module.css";
-import Image from "next/image";
-import SatisfactionForm from "@/components/satisfaction-form";
 
 import {
   FaRobot,
@@ -15,16 +13,11 @@ import {
 } from "react-icons/fa";
 import { useChat } from "ai/react";
 import { suggestionQuestions } from "@/constants";
-import {  registerChatEntrance, saveUserMessage, endUserSession } from "@/actions/chat-actions";
 
 
 export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const [currentChatId, setCurrentChatId] = useState<string | null>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [sessionId, setSessionId] = useState<string | null>(null);
-  const [showSatisfactionForm, setShowSatisfactionForm] = useState(false);
 
   const { 
     messages, 
@@ -36,40 +29,9 @@ export default function ChatPage() {
   } = useChat({
     api: '/api/chat',
     initialMessages: [],
-    onFinish: async () => {
-      // Guardar mensaje del usuario cuando el AI responde
-      if (currentChatId && messages.length > 0) {
-        const lastUserMessage = messages[messages.length - 1];
-        if (lastUserMessage.role === 'user') {
-          try {
-            await saveUserMessage(lastUserMessage.content, currentChatId);
-          } catch (error) {
-            console.error('Error guardando mensaje:', error);
-          }
-        }
-      }
-    }
   });
   
-  const { user, isLoaded } = useUser();
-  
-  // Inicializar chat y registrar entrada
-  useEffect(() => {
-    const initializeChat = async () => {
-      if (isLoaded && user && !isInitialized) {
-        try {
-          const { chat, session } = await registerChatEntrance();
-          setCurrentChatId(chat.id);
-          setSessionId(session.id);
-          setIsInitialized(true);
-        } catch (error) {
-          console.error('Error inicializando chat:', error);
-        }
-      }
-    };
-
-    initializeChat();
-  }, [isLoaded, user, isInitialized]);
+  const { user } = useUser();
   
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -79,38 +41,21 @@ export default function ChatPage() {
     scrollToBottom();
   }, [messages, isLoading]);
 
-  const handleSuggestionClick = async (suggestionText: string) => {
-    if (!currentChatId) return;
-    
-    try {
-      // Agregar mensaje al chat UI
-      await append({
-        role: 'user',
-        content: suggestionText,
-      });
-      
-      // Guardar en la base de datos
-      await saveUserMessage(suggestionText, currentChatId);
-    } catch (error) {
-      console.error('Error enviando sugerencia:', error);
-    }
+
+  const handleSuggestionClick = (suggestionText: string) => {
+    append({
+      role: 'user',
+      content: suggestionText,
+    });
   };
 
-  const handleSendMessage = async () => {
-    if (!input.trim() || isLoading || !currentChatId) return;
+  const handleSendMessage = () => {
+    if (!input.trim() || isLoading) return;
     
-    try {
-      // Guardar mensaje antes de enviarlo
-      await saveUserMessage(input, currentChatId);
-      
-      // Enviar al chat
-      const form = textareaRef.current?.closest('form');
-      if (form) {
-        const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
-        form.dispatchEvent(submitEvent);
-      }
-    } catch (error) {
-      console.error('Error enviando mensaje:', error);
+    const form = textareaRef.current?.closest('form');
+    if (form) {
+      const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+      form.dispatchEvent(submitEvent);
     }
   };
 
@@ -121,52 +66,6 @@ export default function ChatPage() {
     }
   };
 
-  const handleNewChat = async () => {
-    setShowSatisfactionForm(true);
-  };
-
-  const handleSatisfactionSubmitted = () => {
-    setShowSatisfactionForm(false);
-    window.location.reload();
-  };
-
-  useEffect(() => {
-    if (!sessionId) return;
-
-    const handleEndSession = async () => {
-      try {
-        await endUserSession(sessionId);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    window.addEventListener("beforeunload", handleEndSession);
-
-    // Si usas Next.js router, también puedes escuchar cambios de ruta:
-    // router.events.on('routeChangeStart', handleEndSession);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleEndSession);
-      // router.events.off('routeChangeStart', handleEndSession);
-    };
-  }, [sessionId]);
-
-  if (!isLoaded || !isInitialized) {
-    return (
-      <div className={styles.loadingContainer}>
-        <div className={styles.loadingSpinner}>Cargando...</div>
-      </div>
-    );
-  }
-
-  if (showSatisfactionForm && currentChatId) {
-    return (
-      <div className={styles.satisfactionFormContainer}>
-        <SatisfactionForm chatId={currentChatId} onSubmitted={handleSatisfactionSubmitted} />
-      </div>
-    );
-  }
 
   return (
     <section className={styles.chatContainer}>
@@ -176,21 +75,13 @@ export default function ChatPage() {
             <FaBrain style={{color:"#091a44"}}/>
           </div>
           <div>
-            <h1 style={{color:"#091a44"}}>Asistente Psicológico</h1>
+            <h1 style={{color:"#091a44"}}>ELIORA</h1>
             <p className={styles.subtitle}>Aquí para escucharte y apoyarte</p>
           </div>
         </div>
-        <div className={styles.headerActions}>
-          <button 
-            onClick={handleNewChat}
-            className={styles.newChatBtn}
-            title="Nuevo Chat"
-          >
-            <FaPlus />
-          </button>
-          <UserButton />
-        </div>
+        <UserButton />
       </div>
+      
 
       <div className={styles.messagesContainer}>
         {messages.length === 0 ? (
@@ -209,7 +100,6 @@ export default function ChatPage() {
                   className={styles.suggestionCard}
                   onClick={() => handleSuggestionClick(suggestion.text)}
                 >
-                  <div className={styles.suggestionIcon}>{suggestion.icon}</div>
                   <h4>{suggestion.title}</h4>
                   <p>{suggestion.subtitle}</p>
                 </div>
@@ -227,13 +117,10 @@ export default function ChatPage() {
                   {message.role === 'assistant' ? (
                     <FaRobot />
                   ) : user?.imageUrl ? (
-                    <Image
-                      src={user.imageUrl}
-                      alt="Usuario"
+                    <img 
+                      src={user.imageUrl} 
+                      alt="Usuario" 
                       className={styles.userAvatar}
-                      width={40}
-                      height={40}
-                      style={{ objectFit: "cover" }}
                     />
                   ) : (
                     <FaUser />
@@ -269,7 +156,7 @@ export default function ChatPage() {
         )}
       </div>
 
-      <div className={styles.inputContainer}>
+     <div className={styles.inputContainer}>
         <form onSubmit={handleSubmit} className={styles.inputWrapper}>
           <button type="button" className={styles.attachBtn}>
             <FaPlus />
@@ -283,17 +170,13 @@ export default function ChatPage() {
             placeholder="Comparte lo que sientes..."
             className={styles.messageInput}
             rows={1}
-            disabled={isLoading || !currentChatId}
+            disabled={isLoading}
           />
-
-          <button type="button" className={styles.voiceBtn}>
-            <FaMicrophone />
-          </button>
 
           <button
             type="submit"
             className={styles.sendBtn}
-            disabled={!input.trim() || isLoading || !currentChatId}
+            disabled={!input.trim() || isLoading}
           >
             <FaPaperPlane />
           </button>

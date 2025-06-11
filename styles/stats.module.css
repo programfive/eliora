@@ -200,7 +200,7 @@
   
   .sectionIcon {
     font-size: 1.5rem;
-    color: #667eea;
+    color: #b80b0b;
   }
   
   .emotionalGrid {
@@ -475,42 +475,42 @@
   /* Modo oscuro */
   @media (prefers-color-scheme: dark) {
     .statsContainer {
-      background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+      background: linear-gradient(135deg, #091a44  0%, #23266f   100%);
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .header h3,
     .sectionTitle {
-      color: #e2e8f0;
+      color: #667eea;
     }
     
     .statCard,
     .emotionalCard,
     .trendCard {
-      background: rgba(45, 55, 72, 0.9);
+      background: rgba(0, 0, 0, 0.9);
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .statCard:hover,
     .emotionalCard:hover,
     .trendCard:hover {
-      background: rgba(45, 55, 72, 0.95);
+      background: #23256f50;
     }
     
     .statCard h4,
     .emotionalCard h5,
     .trendHeader h5 {
-      color: #a0aec0;
+      color: #ffffff;
     }
     
     .refreshButton {
-      background: rgba(45, 55, 72, 0.9);
+      background: rgba(102, 107, 116, 0.546);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #81e6d9;
+      color: #e8e8e8;
     }
     
     .refreshButton:hover {
-      background: rgba(45, 55, 72, 1);
+      background: rgb(13, 32, 65);
     }
     
     .trendCount {
@@ -525,7 +525,7 @@
 .satisfactionSection {
   margin-top: 2rem;
   padding: 1.5rem;
-  background: white;
+  background: #ffffff;
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
@@ -539,7 +539,7 @@
 
 .satisfactionCard {
   padding: 1rem;
-  background: #f8fafc;
+  background: #c6d5e5;
   border-radius: 0.5rem;
   text-align: center;
   transition: transform 0.2s;
