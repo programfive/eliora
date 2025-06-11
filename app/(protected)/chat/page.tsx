@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useEffect, KeyboardEvent } from "react";
+import { useRef, useEffect, KeyboardEvent, useState } from "react";
 import { UserButton, useUser } from "@clerk/nextjs";
 import styles from "@/styles/chat.module.css";
 
@@ -12,11 +12,14 @@ import {
 } from "react-icons/fa";
 import { useChat } from "ai/react";
 import { suggestionQuestions } from "@/constants";
+import SatisfactionForm from "@/components/satisfaction-form";
 
 
 export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [currentChatId, setCurrentChatId] = useState<string | null>(null);
+  const [showSatisfactionForm, setShowSatisfactionForm] = useState(false);
 
   const { 
     messages, 
@@ -65,6 +68,22 @@ export default function ChatPage() {
     }
   };
 
+  const handleNewChat = async () => {
+    setShowSatisfactionForm(true);
+  };
+
+  const handleSatisfactionSubmitted = () => {
+    setShowSatisfactionForm(false);
+    window.location.reload();
+  };
+
+  if (showSatisfactionForm && currentChatId) {
+    return (
+      <div className={styles.satisfactionFormContainer}>
+        <SatisfactionForm chatId={currentChatId} onSubmitted={handleSatisfactionSubmitted} />
+      </div>
+    );
+  }
 
   return (
     <section className={styles.chatContainer}>
@@ -78,9 +97,24 @@ export default function ChatPage() {
             <p className={styles.subtitle}>Aquí para escucharte y apoyarte</p>
           </div>
         </div>
-        <UserButton />
+        <div className={styles.headerActions}>
+          <button
+            onClick={handleNewChat}
+            className={styles.newChatBtn}
+            title="Nuevo Chat"
+          >
+            <FaPlus />
+          </button>
+          <UserButton />
+        </div>
       </div>
-      
+      <SatisfactionForm
+        chatId={messages[messages.length - 1]?.id || ''}
+        onSubmitted={() => {
+          // Opcional: Puedes agregar una función que se ejecute después de enviar el formulario
+          console.log('Formulario enviado exitosamente');
+        }}
+      />
 
       <div className={styles.messagesContainer}>
         {messages.length === 0 ? (
