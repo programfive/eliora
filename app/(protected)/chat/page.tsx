@@ -8,7 +8,6 @@ import {
   FaUser,
   FaBrain,
   FaPlus,
-  FaMicrophone,
   FaPaperPlane,
 } from "react-icons/fa";
 import { useChat } from "ai/react";
