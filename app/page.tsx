@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import styles from '@/styles/index.module.css';
 import { carouselSlides, programs, icons } from '../constants';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const HomePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -69,9 +70,10 @@ const HomePage: React.FC = () => {
             {carouselSlides.map((slide, index) => (
               <div
                 key={slide.id}
+              
                 className={`${styles.carouselSlide} ${index === currentSlide ? styles.active : ''}`}
               >
-                <img src={slide.image} alt={slide.title} />
+                <Image width={520} height={520} style={{width:"100%",height:"100%"}} priority src={slide.image} alt={slide.title} />
                 <div className={styles.slideOverlay}>
                   <h3>{slide.title}</h3>
                   <p>{slide.description}</p>
