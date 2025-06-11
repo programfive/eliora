@@ -9,7 +9,7 @@ import Image from "next/image";
 const HomePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoginModalActive, setIsLoginModalActive] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);f
   // const { user } = useUser()
 
 
