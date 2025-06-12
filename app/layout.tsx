@@ -22,7 +22,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
- 
 
   // if(!user){
   //   return null;

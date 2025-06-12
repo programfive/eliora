@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { createChart, ColorType, Time , AreaSeries  } from "lightweight-charts";
+import { createChart, ColorType, Time, AreaSeries } from "lightweight-charts";
 import styles from "@/styles/stats.module.css";
 
 interface DataPoint {
@@ -40,10 +40,10 @@ export default function StatsChart({ data, title, color = "#2563eb" }: StatsChar
       },
     });
 
-    // Corrección: Usar addSeries con el tipo correcto
-    const series = chart.addSeries(AreaSeries);
 
-    series.setData(data);
+    const areaSeries = chart.addSeries(AreaSeries);
+
+    areaSeries.setData(data);
 
     // Responsive resize
     const handleResize = () => {

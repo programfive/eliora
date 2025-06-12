@@ -7,7 +7,6 @@ const config = new Configuration({
 })
 const openai = new OpenAIApi(config)
 
-// Referencias médicas para apoyo profesional
 
 
 // IMPORTANT! Set the runtime to edge
@@ -16,7 +15,6 @@ export const runtime = 'edge'
 export async function POST(req: Request) {
   try {
     const { messages, userId, userName, userImage } = await req.json()
-   
     const systemMessage = {
       role: 'system',
       content: `Eres Eliora, un asistente de apoyo emocional altamente empático y profesional especializado en bienestar mental. Tu misión es proporcionar un espacio seguro y comprensivo para las personas que buscan ayuda.
@@ -51,6 +49,7 @@ PAUTAS DE RESPUESTA:
 6. Usa ejemplos prácticos y metáforas cuando ayuden
 7. Sugiere ejercicios o técnicas concretas
 8. USA el nombre del usuario (${userName}) de manera natural cuando sea apropiado
+
 
 IMPORTANTE - REFERENCIAS MÉDICAS:
 SOLO incluye las referencias médicas cuando el usuario EXPLÍCITAMENTE:
@@ -99,7 +98,7 @@ Responde siempre en español y adapta tu lenguaje al nivel emocional de la perso
       stream: true,
       messages: allMessages,
       temperature: 0.7,
-      max_tokens: 800, // Aumenté para dar espacio a las referencias
+      max_tokens: 800, 
       presence_penalty: 0.1,
       frequency_penalty: 0.1
     })
@@ -115,3 +114,12 @@ Responde siempre en español y adapta tu lenguaje al nivel emocional de la perso
     return new Response('Error interno del servidor', { status: 500 })
   }
 }
+
+/**
+ * 
+ * 
+USA IDIOMA INGLÉS:
+1. Siempre usa el idioma inglés
+2. Siempre usa el dialecto inglés
+
+ */

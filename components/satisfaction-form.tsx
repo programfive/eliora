@@ -4,10 +4,13 @@ import styles from "@/styles/satisfaction.module.css";
 
 export default function SatisfactionForm({
   chatId,
-  onSubmitted,
+  setShowSatisfactionModal,
+  setIsSatisfactionRatingState,
 }: {
   chatId: string;
   onSubmitted?: () => void;
+  setShowSatisfactionModal: (show: boolean) => void;
+  setIsSatisfactionRatingState: (state: boolean) => void;
 }) {
   const [ratings, setRatings] = useState({
     overallRating: 5,
@@ -33,18 +36,14 @@ export default function SatisfactionForm({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    try {
-      await saveSatisfactionRating(chatId, ratings);
-      if (onSubmitted) onSubmitted();
-    } catch (err) {
-      console.log(err); 
-    }
+    await saveSatisfactionRating(chatId, ratings);
+    setShowSatisfactionModal(false);
+    setIsSatisfactionRatingState(true);
     setLoading(false);
   };
 
   return (
-    <form onSubmit={handleSubmit} className={styles.formContainer}>
+    <form onSubmit={handleSubmit}  className={styles.formContainer}>
       <h3 className={styles.formTitle}>Califica tu experiencia</h3>
       <label className={styles.label}>
         General:
@@ -94,6 +93,7 @@ export default function SatisfactionForm({
           onChange={handleChange}
         />
       </label>
+      <div className={styles.feedbackContainer}>
       <label className={styles.label}>
         Comentarios:
         <textarea
@@ -112,6 +112,7 @@ export default function SatisfactionForm({
           onChange={handleChange}
         />
       </label>
+      </div>
       <button type="submit" className={styles.button} disabled={loading}>
         Enviar
       </button>

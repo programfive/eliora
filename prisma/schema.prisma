@@ -10,344 +10,95 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Modelo de Usuario mejorado
-model User {
-  id        String     @id @default(uuid())
-  clerkId   String     @unique
-  name      String?
-  email     String?
-  career    String?    // Carrera que estudia
-  semester  Int?       // Semestre actual
-  birthdate      DateTime?       // Edad del estudiante
-  
-  // Relaciones
-  chats     Chat[]
-  sessions  UserSession[]
-  emotionalStates EmotionalState[]
-  satisfactionRatings SatisfactionRating[]
-  referrals Referral[]
-  
-  // Estadísticas del usuario
-  totalSessions    Int @default(0)
-  totalChatTime    Int @default(0) // Tiempo total en minutos
-  lastActiveAt     DateTime?
-  registrationDate DateTime @default(now())
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  @@map("users")
-}
-
-// Sesiones de usuario para tracking de tiempo
-model UserSession {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  startTime DateTime @default(now())
-  endTime   DateTime?
-  duration  Int?     // Duración en minutos
-  pageViews Int @default(1)
-  
-  // Actividad durante la sesión
-  messagesCount Int @default(0)
-  emotionalStateId String?
-  emotionalState EmotionalState? @relation(fields: [emotionalStateId], references: [id])
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  @@map("user_sessions")
-}
-
-// Estados emocionales de los usuarios
-model EmotionalState {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  // Estado emocional seleccionado
-  emotion   EmotionType
-  intensity Int      // Escala 1-10
-  description String? // Descripción adicional del usuario
-  
-  // Contexto
-  triggers  String?  // Qué desencadenó esta emoción
-  symptoms  String[] // Síntomas físicos o mentales
-  
-  // Relaciones
-  chats     Chat[]
-  sessions  UserSession[]
-  
-  createdAt DateTime @default(now())
-  
-  @@map("emotional_states")
-}
-
-// Enum para tipos de emociones
-enum EmotionType {
-  EXCELLENT    // 😊 Muy bien / Excelente
-  NORMAL       // 😐 Normal / Regular  
-  SAD          // 😔 Triste / Decaído
-  ANXIOUS      // 😰 Ansioso / Preocupado
-  ANGRY        // 😡 Enojado / Frustrado
-  TIRED        // 😴 Cansado / Agotado
-  CONFUSED     // 😕 Confundido / Perdido
-  
-  @@map("emotion_types")
-}
-
-// Modelo de Chat mejorado
-model Chat {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  // Estado emocional al iniciar el chat
-  emotionalStateId String?
-  emotionalState EmotionalState? @relation(fields: [emotionalStateId], references: [id])
-  
-  // Metadatos del chat
-  title     String?  // Título generado automáticamente
-  summary   String?  // Resumen de la conversación
-  mood      String?  // Estado de ánimo general del chat
-  tags      String[] // Tags para categorización
-  
-  // Métricas
-  messageCount    Int @default(0)
-  duration        Int @default(0) // Duración en minutos
-  satisfactionRating SatisfactionRating?
-  
-  // Estado del chat
-  isActive    Boolean @default(true)
-  isArchived  Boolean @default(false)
-  
-  // Relaciones
-  messages    Message[]
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  @@map("chats")
-}
-
-// Mensajes individuales (reemplaza DetalleChat)
-model Message {
-  id        String   @id @default(uuid())
-  chatId    String
-  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
-  
-  // Contenido del mensaje
-  content   String
-  role      MessageRole // user, assistant, system
-  
-  // Análisis del mensaje
-  sentiment       String?  // positive, negative, neutral
-  emotionAnalysis Json?    // Análisis detallado de emociones
-  keywords        String[] // Palabras clave extraídas
-  
-  // Métricas
-  responseTime    Int?     // Tiempo de respuesta del bot en ms
-  characterCount  Int      @default(0)
-  wordCount       Int      @default(0)
-  
-  createdAt DateTime @default(now())
-  
-  @@map("messages")
-}
-
 enum MessageRole {
   USER
   ASSISTANT
   SYSTEM
-  
+
   @@map("message_roles")
 }
 
-// Calificaciones de satisfacción
+model User {
+  id                  String               @id @default(uuid())
+  clerkId             String               @unique
+  name                String?
+  chats               Chat[]
+  sessions            UserSession[]
+  satisfactionRatings SatisfactionRating[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+
+  @@map("users")
+}
+
+model UserSession {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user_sessions")
+}
+
+model Chat {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  emotionalStateId String?
+
+  title String?
+
+  messageCount Int @default(0)
+
+  satisfactionRating SatisfactionRating?
+
+  isActive   Boolean @default(true)
+  isArchived Boolean @default(false)
+
+  messages Message[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("chats")
+}
+
+model Message {
+  id     String @id @default(uuid())
+  chatId String
+  chat   Chat   @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
+  content String
+  role    MessageRole // user, assistant, system
+
+  wordCount Int @default(0) // cantidad de palabras del mensaje
+
+  createdAt DateTime @default(now())
+
+  @@map("messages")
+}
+
 model SatisfactionRating {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  chatId    String   @unique
-  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
-  
-  // Calificaciones (1-5 estrellas)
-  overallRating    Int      // Calificación general
-  helpfulnessRating Int     // Qué tan útil fue
-  empathyRating    Int      // Qué tan empático fue el bot
-  clarityRating    Int      // Qué tan clara fue la respuesta
-  
-  // Feedback adicional
-  feedback         String?  // Comentarios del usuario
-  wouldRecommend   Boolean? // Si recomendaría el servicio
-  
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chatId String @unique
+  chat   Chat   @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
+  overallRating     Int
+  helpfulnessRating Int
+  empathyRating     Int
+  clarityRating     Int
+
+  feedback       String?
+  wouldRecommend Boolean?
+
   createdAt DateTime @default(now())
-  
+
   @@map("satisfaction_ratings")
-}
-
-// Profesionales recomendados
-model Professional {
-  id        String   @id @default(uuid())
-  
-  // Información básica
-  name        String
-  lastName    String
-  email       String?
-  phone       String
-  
-  // Información profesional
-  specialty   String
-  license     String?
-  experience  Int?     // Años de experiencia
-  
-  // Ubicación
-  address     String
-  city        String
-  state       String
-  zipCode     String?
-  
-  // Disponibilidad
-  workingHours Json?   // Horarios de atención
-  languages    String[] // Idiomas que habla
-  
-  // Calificaciones
-  rating      Float?   // Calificación promedio
-  reviewCount Int      @default(0)
-  
-  // Estado
-  isActive    Boolean  @default(true)
-  isVerified  Boolean  @default(false)
-  
-  // Relaciones
-  referrals   Referral[]
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  @@map("professionals")
-}
-
-// Referencias/derivaciones a profesionales
-model Referral {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  professionalId String
-  professional Professional @relation(fields: [professionalId], references: [id])
-  
-  // Información de la referencia
-  reason      String   // Motivo de la derivación
-  urgency     UrgencyLevel
-  status      ReferralStatus @default(PENDING)
-  
-  // Seguimiento
-  contactedAt    DateTime?
-  appointmentAt  DateTime?
-  completedAt    DateTime?
-  
-  notes       String?  // Notas adicionales
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  @@map("referrals")
-}
-
-enum UrgencyLevel {
-  LOW
-  MEDIUM
-  HIGH
-  URGENT
-  
-  @@map("urgency_levels")
-}
-
-enum ReferralStatus {
-  PENDING
-  CONTACTED
-  SCHEDULED
-  COMPLETED
-  CANCELLED
-  
-  @@map("referral_status")
-}
-
-// Análisis y tendencias
-model EmotionalTrend {
-  id        String   @id @default(uuid())
-  
-  // Período de análisis
-  date      DateTime @default(now())
-  period    TrendPeriod // daily, weekly, monthly
-  
-  // Métricas emocionales
-  emotion   EmotionType
-  count     Int
-  percentage Float
-  
-  // Segmentación
-  university String?
-  career     String?
-  semester   Int?
-  
-  createdAt DateTime @default(now())
-  
-  @@map("emotional_trends")
-}
-
-enum TrendPeriod {
-  DAILY
-  WEEKLY
-  MONTHLY
-  YEARLY
-  
-  @@map("trend_periods")
-}
-
-// Alertas del sistema
-model Alert {
-  id        String   @id @default(uuid())
-  userId    String?
-  
-  // Tipo de alerta
-  type      AlertType
-  severity  AlertSeverity
-  
-  // Contenido
-  title     String
-  message   String
-  data      Json?    // Datos adicionales de la alerta
-  
-  // Estado
-  isRead    Boolean @default(false)
-  isResolved Boolean @default(false)
-  
-  createdAt DateTime @default(now())
-  resolvedAt DateTime?
-  
-  @@map("alerts")
-}
-
-enum AlertType {
-  HIGH_RISK_USER
-  SUICIDE_IDEATION
-  EMOTIONAL_DECLINE
-  SYSTEM_ERROR
-  PROFESSIONAL_REFERRAL_NEEDED
-  
-  @@map("alert_types")
-}
-
-enum AlertSeverity {
-  INFO
-  WARNING
-  CRITICAL
-  EMERGENCY
-  
-  @@map("alert_severities")
 }
 
 // Remover modelos antiguos si existen

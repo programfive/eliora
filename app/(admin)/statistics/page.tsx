@@ -1,4 +1,3 @@
-// components/ChatStats.tsx
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -15,7 +14,7 @@ import {
 } from 'react-icons/fi'
 import { redirect } from 'next/navigation'
 import styles from '@/styles/stats.module.css'
-import { getChatStats, getEmotionalTrends } from '@/actions/chat-actions'
+import { getChatStats, getActiveUsersChartData } from '@/actions/chat-actions'
 import { useUser } from '@clerk/nextjs'
 import StatsChart from '@/components/stats-chart'
 
@@ -24,19 +23,9 @@ interface StatsData {
   totalSessions: number
   totalMessages: number
   totalChats: number
-  emotionalStats: Array<{
-    emotion: string
-    _count: { emotion: number }
-  }>
-  avgSessionTime: number
   activeUsersToday: number
   activeUsersThisMonth: number
   activeUsersThisYear: number
-  messagesByHour: Array<{
-    createdAt: Date
-    _count: { createdAt: number }
-  }>
-  avgResponseTime: number
   satisfactionStats: {
     overall: number
     helpfulness: number
@@ -45,33 +34,21 @@ interface StatsData {
   }
 }
 
-interface EmotionalTrend {
-  emotion: string
-  count: number
-  percentage: number
+interface ChartDataPoint {
+  time: string
+  value: number
 }
-
-const emotionTranslations = {
-  'HAPPY': 'Feliz',
-  'SAD': 'Triste',
-  'ANXIOUS': 'Ansioso',
-  'CALM': 'Tranquilo',
-  'EXCITED': 'Emocionado',
-  'ANGRY': 'Enojado',
-  'CONFUSED': 'Confundido',
-  'GRATEFUL': 'Agradecido'
-} as const
 
 export default function ChatStats() {
   const { user } = useUser()
-
 
   const isAdminrole = user?.publicMetadata?.role === "admin"
   if (!isAdminrole) {
     redirect('/')
   }
+
   const [stats, setStats] = useState<StatsData | null>(null)
-  const [emotionalTrends, setEmotionalTrends] = useState<EmotionalTrend[]>([])
+  const [chartData, setChartData] = useState<ChartDataPoint[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [refreshing, setRefreshing] = useState(false)
@@ -80,13 +57,14 @@ export default function ChatStats() {
     try {
       setError(null)
       
-      const [statsData, trendsData] = await Promise.all([
-        getChatStats(),
-        getEmotionalTrends()
-      ])
+      // Obtener estadísticas generales
+      const statsData = await getChatStats()
+      
+      // Obtener datos reales del gráfico
+      const realChartData = await getActiveUsersChartData(7)
       
       setStats(statsData)
-      setEmotionalTrends(trendsData)
+      setChartData(realChartData)
     } catch (err) {
       console.error('Error cargando datos:', err)
       setError('Error al cargar las estadísticas')
@@ -109,7 +87,6 @@ export default function ChatStats() {
   const formatNumber = (num: number) => {
     return new Intl.NumberFormat('es-ES').format(num)
   }
-
 
   if (loading) {
     return (
@@ -142,18 +119,10 @@ export default function ChatStats() {
 
   if (!stats) return null
 
-  // Ejemplo de datos (reemplaza con tus datos reales)
-  const activeUsersByDay = [
-    { time: "2024-06-01", value: 10 },
-    { time: "2024-06-02", value: 15 },
-    { time: "2024-06-03", value: 20 },
-    // ...
-  ];
-
   return (
     <div className={styles.statsContainer}>
       <div className={styles.header}>
-        <h3>Estadísticas del Chat</h3>
+        <h3 style={{color:"rgb(9, 26, 68)"}}>Estadísticas del Chat</h3>
         <button 
           onClick={handleRefresh} 
           className={styles.refreshButton}
@@ -199,108 +168,73 @@ export default function ChatStats() {
         </div>
       </div>
 
-      {/* Estadísticas adicionales */}
+      {/* Estadísticas de usuarios activos */}
       <div className={styles.additionalStats}>
         <div className={styles.statCard}>
           <div className={styles.statIcon}>
             <FiActivity />
           </div>
           <h4>Usuarios Activos Hoy</h4>
-          <p className={styles.statNumber}>{formatNumber(stats.activeUsersToday || 0)}</p>
+          <p className={styles.statNumber}>{formatNumber(stats.activeUsersToday)}</p>
         </div>
 
         <div className={styles.statCard}>
           <div className={styles.statIcon}>
             <FiClock />
           </div>
-          <h4>Usuarios Activos Este mes</h4>
-          <p className={styles.statNumber}>{formatNumber(stats.activeUsersThisMonth || 0)}</p>
+          <h4>Usuarios Activos Este Mes</h4>
+          <p className={styles.statNumber}>{formatNumber(stats.activeUsersThisMonth)}</p>
         </div>
 
         <div className={styles.statCard}>
           <div className={styles.statIcon}>
-            <FiClock />
+            <FiTrendingUp />
           </div>
-          <h4>Usuarios Activos Año</h4>
+          <h4>Usuarios Activos Este Año</h4>
           <p className={styles.statNumber}>{formatNumber(stats.activeUsersThisYear)}</p>
         </div>
       </div>
+
+      {/* Gráfico de usuarios activos con datos reales */}
       <StatsChart
-        data={activeUsersByDay}
-        title="Usuarios Activos por Día"
+        data={chartData}
+        title="Usuarios Activos por Día (Última Semana)"
         color="#2563eb"
       />
+
       {/* Estadísticas de satisfacción */}
       <div className={styles.satisfactionSection}>
-        <h4 className={styles.sectionTitle}>
+        <h4 style={{color:"rgb(9, 26, 68)"}} className={styles.sectionTitle}>
           <FiHeart className={styles.sectionIcon} />
           Satisfacción del Usuario
         </h4>
         <div className={styles.satisfactionGrid}>
           <div className={styles.satisfactionCard}>
             <h5>General</h5>
-            <p className={styles.satisfactionRating}>{stats.satisfactionStats.overall.toFixed(1)}/5</p>
+            <p className={styles.satisfactionRating}>
+              {stats.satisfactionStats.overall.toFixed(1)}/5
+            </p>
           </div>
           <div className={styles.satisfactionCard}>
             <h5>Utilidad</h5>
-            <p className={styles.satisfactionRating}>{stats.satisfactionStats.helpfulness.toFixed(1)}/5</p>
+            <p className={styles.satisfactionRating}>
+              {stats.satisfactionStats.helpfulness.toFixed(1)}/5
+            </p>
           </div>
           <div className={styles.satisfactionCard}>
             <h5>Empatía</h5>
-            <p className={styles.satisfactionRating}>{stats.satisfactionStats.empathy.toFixed(1)}/5</p>
+            <p className={styles.satisfactionRating}>
+              {stats.satisfactionStats.empathy.toFixed(1)}/5
+            </p>
           </div>
           <div className={styles.satisfactionCard}>
             <h5>Claridad</h5>
-            <p className={styles.satisfactionRating}>{stats.satisfactionStats.clarity.toFixed(1)}/5</p>
+            <p className={styles.satisfactionRating}>
+              {stats.satisfactionStats.clarity.toFixed(1)}/5
+            </p>
           </div>
         </div>
       </div>
-
-      {/* Estadísticas emocionales */}
-      {stats.emotionalStats.length > 0 && (
-        <div className={styles.emotionalSection}>
-          <h4 className={styles.sectionTitle}>
-            <FiHeart className={styles.sectionIcon} />
-            Estados Emocionales Registrados
-          </h4>
-          <div className={styles.emotionalGrid}>
-            {stats.emotionalStats.map((emotion, index) => (
-              <div key={index} className={styles.emotionalCard}>
-                <h5>{emotionTranslations[emotion.emotion as keyof typeof emotionTranslations] || emotion.emotion}</h5>
-                <p className={styles.emotionalCount}>{formatNumber(emotion._count.emotion)}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Tendencias emocionales de la semana */}
-      {emotionalTrends.length > 0 && (
-        <div className={styles.trendsSection}>
-          <h4 className={styles.sectionTitle}>
-            <FiTrendingUp className={styles.sectionIcon} />
-            Tendencias Emocionales (Última Semana)
-          </h4>
-          <div className={styles.trendsGrid}>
-            {emotionalTrends.map((trend) => (
-              <div key={trend.emotion} className={styles.trendCard}>
-                <div className={styles.trendHeader}>
-                  <h5>{emotionTranslations[trend.emotion as keyof typeof emotionTranslations] || trend.emotion}</h5>
-                  <span className={styles.trendPercentage}>{trend.percentage.toFixed(1)}%</span>
-                </div>
-                <div className={styles.trendBar}>
-                  <div 
-                    className={styles.trendProgress}
-                    style={{ width: `${trend.percentage}%` }}
-                  ></div>
-                </div>
-                <p className={styles.trendCount}>{formatNumber(trend.count)} registros</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
     </div>
   )
 }

@@ -2,7 +2,7 @@
 .body {
     font-family: 'Outfit', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
-    color: #333;
+    color: #000000;
     background-color: #091a44;
     min-height: 100vh;
     margin: 0;
@@ -14,9 +14,9 @@
     min-height: 100vh;
     max-width: 1400px;
     margin: 0 auto;
-    background: rgba(255, 255, 255, 0.95);
+    background: #ffffff;
     backdrop-filter: blur(10px);
-    border-radius: 20px;
+    border-radius: 2px;
     overflow: hidden;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   }
@@ -24,7 +24,7 @@
   /* Sidebar */
   .sidebar {
     width: 280px;
-    background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+    background: linear-gradient(180deg, #091a44 0%, #23266f 100%);
     padding: 30px 20px;
     color: white;
     position: relative;
@@ -76,9 +76,9 @@
   }
   
   .logo p {
-    font-size: 12px;
+    font-size: 19px;
     color: rgba(255, 255, 255, 0.8);
-    letter-spacing: 1px;
+    letter-spacing: 12px;
   }
   
   .navMenu {
@@ -162,7 +162,7 @@
     border: none;
     margin-top: 10px;
     width: 100%;
-    background-color: #667eea;
+    background-color: #0060d1;
     color: white;
   }
   
@@ -222,7 +222,7 @@
   .sectionTitle {
     font-size: 32px;
     font-weight: bold;
-    color: #2c3e50;
+    color: #091a44;
     margin-bottom: 30px;
     text-align: center;
     position: relative;
@@ -433,11 +433,11 @@
   
   /* Footer */
   .footer {
-    background: #2c3e50;
+    background: #23266f;
     color: white;
-    padding: 40px;
+    padding: 20px;
     border-radius: 20px;
-    margin-top: 40px;
+    margin-top: 10px;
   }
   
   .footerContent {
@@ -492,7 +492,7 @@
   }
   
   .copyrightAuth {
-    color: #667eea;
+    color: #b6adad;
   }
   
   .copyrightUnauth {
@@ -500,14 +500,14 @@
   }
   
   .linkAuth {
-    color: #091a44 !important;
+    color: #ffffff !important;
     text-decoration: none;
     margin: 0 5px;
     transition: color 0.3s ease;
   }
   
   .linkAuth:hover {
-    color: #667eea !important;
+    color: #b6adad !important;
   }
   
   .linkUnauth {
@@ -542,7 +542,7 @@
     z-index: 999;
     transition: transform 0.3s ease;
     overflow-y: auto;
-    background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+    background: linear-gradient(180deg, #131145 0%, #0c3665  100%);
   }
 
   .sidebar.active {
@@ -578,6 +578,70 @@
   background: #1a365d;
   transform: scale(1.1);
 }
+.horizontalNav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.horizontalMenu {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.horizontalMenu a {
+  color: #091a44;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.horizontalMenu a:hover {
+  background: #f0f2f5;
+  color: #667eea;
+}
+
+.mobileMenuBtn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #091a44;
+}
+
+@media (max-width: 768px) {
+  .horizontalMenu {
+    display: none;
+  }
+
+  .mobileMenuBtn {
+    display: block;
+  }
+
+  .horizontalMenu.active {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+}
 .loginBtn{
     margin-top: 15px;
     background-color: #e74c3c;
@@ -594,7 +658,7 @@
 }
 
 /* Media queries para diseño responsive */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 710px) {
   .container {
     flex-direction: column;
   }
@@ -607,10 +671,10 @@
 
   .sidebar {
     position: fixed;
-    top: 0;
+    top:0;
     height: 100vh;
     left: -280px;
-    height: 100vh;
+    height: 400vh;
     z-index: 999;
     transition: transform 0.3s ease;
   }
@@ -620,8 +684,8 @@
   }
 
   .main {
-    padding: 20px;
-    margin-top: 60px;
+    padding: 2px;
+    margin-top: 50px;
   }
 
   .header h1 {
