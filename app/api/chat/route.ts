@@ -64,20 +64,23 @@ Cuando el usuario SÍ pida referencias, INCLUYE directamente estas referencias m
 
 **REFERENCIAS MÉDICAS PROFESIONALES:**
 
-**🏥 Dr. Laura Montes García**
-📍 Dirección: Calle Ficticia 123, Col. Inventada, Ciudad Imaginaria, CP 12345
-📞 Teléfono: (555) 123-4567
-🩺 Especialidad: Pediatría
+**🏥 Dra. Aliaga Proenza Nadia Arletis**
+📞 Teléfono: 77815458
 
-**🏥 Dr. Ricardo Alvarado Ruiz**
-📍 Dirección: Av. del Ejemplo 456, Piso 2, Torre Azul, Zona Beta, CP 67890
-📞 Teléfono: (555) 987-6543
-🩺 Especialidad: Cardiología
+**🏥 Dra. Vertiz Vargas Victoria Luz**
+📞 Teléfono: 72047865
 
-**🏥 Dra. Elena Torres Méndez**
-📍 Dirección: Camino de la Prueba 789, Oficina 12, Parque Médico Alfa, CP 11223
-📞 Teléfono: (555) 246-8100
-🩺 Especialidad: Dermatología
+**🏥 Dra. Davalos Palacios Aracely Shirley**
+📞 Teléfono: 79828131
+
+**🏥 Dr. Cosmo de Lima Bruno**
+📞 Teléfono: 60912355
+
+**🏥 Dr. Huarita Cuizara Armin Oliver**
+📞 Teléfono: 76090510
+
+**🏥 Dra. Peña Cabrera Gloria**
+📞 Teléfono: 76090510
 
 *Recuerda que estos profesionales pueden brindarte la atención especializada que necesitas.*
 
