@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ELIORA - Chatbot de Apoyo Emocional para Estudiantes
 
-## Getting Started
+![Image](https://github.com/user-attachments/assets/688804f9-54d4-4df4-a28b-f437044bb44d)
 
-First, run the development server:
+## Descripción
+ELIORA es una aplicación web que utiliza inteligencia artificial para brindar apoyo psicológico y emocional a estudiantes de la Universidad Bethesda. Ofrece una interfaz conversacional empática, accesible 24/7, que permite a los estudiantes expresar sus emociones, recibir orientación y apoyo emocional de manera confidencial.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+También cuenta con un panel administrativo que proporciona estadísticas emocionales y datos analíticos para que la universidad pueda implementar acciones de bienestar estudiantil basadas en información real.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Características Principales
+- Registro y autenticación segura de estudiantes mediante código universitario.
+- Chatbot conversacional basado en la API de OpenAI (GPT-4-turbo) para asistencia emocional.
+- Respuestas personalizadas y validación emocional.
+- Interfaz intuitiva y empática para estudiantes.
+- Panel administrativo con métricas en tiempo real sobre el bienestar estudiantil.
+- Alertas automáticas para detectar posibles crisis emocionales.
+- Historial privado de conversaciones y recursos de autoayuda.
+- Escalabilidad para atender múltiples usuarios simultáneamente.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tecnologías Utilizadas
+- **Frontend:** Next.js, TypeScript, CSS Modules
+- **Backend:** Node.js, Prisma ORM, PostgreSQL
+- **Autenticación:** Clerk
+- **Inteligencia Artificial:** API de OpenAI (GPT-4-turbo)
+- **Metodología de desarrollo:** SCRUM (Sprint Planning, Daily Standups, Sprint Review, Retrospective)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Instalación y Configuración
+1. Clonar el repositorio:
+   ```bash
+   git clone https://github.com/tuusuario/ELIORA.git
 
-## Learn More
+2. Instalar dependencias:
+  ```bash
+    npm install
 
-To learn more about Next.js, take a look at the following resources:
+3. Configurar variables de entorno (por ejemplo):
+**OPENAI_API_KEY:** clave para la API de OpenAI.
+Configuración para Clerk, base de datos PostgreSQL, etc.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. Desplegar la base de datos con Prisma:
+   ```bash
+    Run
+   Copy code
+   npx prisma migrate deploy
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+5. Ejecutar la aplicación en modo desarrollo:
+   ```bash
+      Run
+      Copy code
+      npm run dev
 
-## Deploy on Vercel
+## Uso
+- Los estudiantes pueden registrarse y acceder a la interfaz de chat para expresar cómo se sienten.
+- El chatbot responde con mensajes empáticos y ofrece técnicas básicas de regulación emocional.
+- Los administradores pueden iniciar sesión en el panel para visualizar estadísticas y gestionar el sistema.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Estructura del Proyecto
+- `/frontend` - Código React/Next.js para la interfaz del usuario.
+- `/backend` - APIs, lógica del chatbot, módulos de autenticación.
+- `/database` - Esquemas y migraciones de Prisma para PostgreSQL.
+- `/docs` - Documentación adicional, protocolo SCRUM, especificaciones.
+
+## Equipo de Desarrollo
+- **Frontend:** Alizon Cortez Escobar, Juan Luis Chumbe Montaño, James
+- **Backend:** Deivy Orlando Ortiz Martinez, Josue David Kennedy Mamani, Jhonatan Gabriel Montesinos Sossa
+
+## Contribuciones
+Las contribuciones son bienvenidas. Por favor abrir issues o enviar pull requests para mejoras, correcciones o nuevas funcionalidades.
+
+## Licencia
+[Indicar la licencia del proyecto, por ejemplo, MIT License]
+
+## Contacto
+Para más información o consultas contactar a:  
+- Correo: ejemplo@universidad.edu  
+- Link del proyecto en GitHub: https://github.com/tuusuario/ELIORA
