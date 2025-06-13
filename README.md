@@ -1,5 +1,7 @@
 # ELIORA - Chatbot de Apoyo Emocional para Estudiantes
 
+![Image](https://github.com/user-attachments/assets/688804f9-54d4-4df4-a28b-f437044bb44d)
+
 ## Descripción
 ELIORA es una aplicación web que utiliza inteligencia artificial para brindar apoyo psicológico y emocional a estudiantes de la Universidad Bethesda. Ofrece una interfaz conversacional empática, accesible 24/7, que permite a los estudiantes expresar sus emociones, recibir orientación y apoyo emocional de manera confidencial.
 
