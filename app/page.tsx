@@ -69,11 +69,6 @@ const HomePage: React.FC = () => {
 
   return (
     <>
-            <div className={styles.header}>
-              <h1>Campus Universitario</h1>
-              <p>Descubre nuestras modernas instalaciones y ambiente académico de excelencia</p>
-            </div>
-
             {/* Campus Section */}
             <div className={styles.campusSection}>
               <h2 className={styles.sectionTitle}>Nuestro Campus</h2>

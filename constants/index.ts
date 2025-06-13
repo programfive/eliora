@@ -44,9 +44,9 @@ import {
     },
     {
       id: 2,
-      image: "/images/5.jpg",
-      title: "Biblioteca Central",
-      description: "Recursos académicos de vanguardia"
+      image: "/images/4.gif",
+      title: "Únete a UNIBETH",
+      description: "Se parte de la Universidad"
     },
     {
       id: 3,
@@ -114,26 +114,55 @@ import {
 
  export  const suggestionQuestions: Suggestion[] = [
     {
-      
-      title: "🗨️ Gestión de Ansiedad",
-      subtitle: "Técnicas para manejar momentos de estrés",
-      text: "Hola, me siento muy ansioso últimamente y no sé cómo manejarlo. ¿Podrías ayudarme con algunas técnicas para controlar mi ansiedad?",
+      title: "😊 Muy bien / Excelente",
+      subtitle: "Compartir momentos positivos",
+      text: "Me siento muy bien hoy y quiero compartir mis logros y momentos positivos.",
     },
     {
- 
-      title: "😢 Apoyo Emocional",
-      subtitle: "Hablar sobre sentimientos difíciles",
-      text: "Estoy pasando por un momento muy difícil emocionalmente. Necesito hablar con alguien sobre lo que estoy sintiendo.",
+      title: "😐 Normal / Regular",
+      subtitle: "Reflexionar sobre el día a día",
+      text: "Estoy teniendo un día normal, ¿cómo puedo aprovecharlo mejor?",
     },
     {
-
-      title: "🧠 Autoconocimiento",
-      subtitle: "Explorar pensamientos y emociones",
-      text: "Quiero entender mejor mis emociones y patrones de pensamiento. ¿Podrías guiarme en un proceso de autoexploración?",
+      title: "😔 Triste / Decaído",
+      subtitle: "Buscar apoyo emocional",
+      text: "Me siento triste y decaído últimamente, necesito hablar sobre lo que me está afectando.",
     },
     {
-      title: "💪 Desarrollo Personal",
-      subtitle: "Estrategias para crecer y mejorar",
-      text: "Me gustaría trabajar en mi crecimiento personal y desarrollar mejores hábitos. ¿Qué estrategias me recomiendas?",
+      title: "😰 Ansioso / Preocupado",
+      subtitle: "Manejar la ansiedad",
+      text: "Me siento ansioso y preocupado, ¿podrías ayudarme a manejar estas emociones?",
+    },
+    {
+      title: "😡 Enojado / Frustrado",
+      subtitle: "Gestionar la frustración",
+      text: "Estoy enojado y frustrado, necesito ayuda para manejar estas emociones intensas.",
+    },
+    {
+      title: "😴 Cansado / Agotado",
+      subtitle: "Recuperar energía",
+      text: "Me siento muy cansado y agotado, ¿qué puedo hacer para recuperar mi energía?",
+    },
+    {
+      title: "😕 Confundido / Perdido",
+      subtitle: "Encontrar claridad",
+      text: "Me siento confundido y perdido, necesito ayuda para encontrar dirección.",
+    },
+    {
+      title: "😌 Relajado / Tranquilo",
+      subtitle: "Mantener la calma",
+      text: "Me siento relajado y tranquilo, ¿cómo puedo mantener este estado de paz?",
     },
   ];
+
+export const emotionsDescription = `La escala de puntuación del 1 al 5 te permite expresar tu nivel de satisfacción o estado actual:
+
+1. Muy Insatisfecho / Mal: Representa un estado de gran insatisfacción o malestar. Es importante identificar las causas y buscar ayuda para mejorar la situación.
+
+2. Insatisfecho / Regular: Indica que hay aspectos que necesitan mejorar. Es un momento para reflexionar sobre qué cambios podrían hacer que te sientas mejor.
+
+3. Neutral / Aceptable: Muestra un estado de equilibrio, ni muy positivo ni muy negativo. Es un buen punto de partida para trabajar en mejoras graduales.
+
+4. Satisfecho / Bien: Demuestra un buen nivel de satisfacción. Es un momento para reconocer los aspectos positivos y mantener las buenas prácticas.
+
+5. Muy Satisfecho / Excelente: Representa el nivel más alto de satisfacción. Es importante identificar qué factores contribuyen a este estado para poder mantenerlos.`;

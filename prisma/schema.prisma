@@ -22,6 +22,9 @@ model User {
   id                  String               @id @default(uuid())
   clerkId             String               @unique
   name                String?
+  career              String?
+  birthDate           DateTime?
+  gender              String?
   chats               Chat[]
   sessions            UserSession[]
   satisfactionRatings SatisfactionRating[]
@@ -47,9 +50,11 @@ model Chat {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  emotionalStateId String?
+  
 
   title String?
+
+  emotion String?
 
   messageCount Int @default(0)
 

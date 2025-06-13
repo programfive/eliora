@@ -43,7 +43,10 @@ export default function Modal({ isOpen, onClose, children, title }: ModalProps) 
     <div className={styles.modalOverlay}>
       <div className={styles.modal} ref={modalRef}>
         <div className={styles.modalHeader}>
-          {title && <h2 className={styles.modalTitle}>{title}</h2>}
+          <div style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
+          {title && <h2 className={styles.modalTitle}>{title}</h2>} 
+          <p>Califique del 1 al 5</p>
+          </div>
           <button className={styles.closeButton} onClick={onClose}>
             ×
           </button>

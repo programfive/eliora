@@ -4,11 +4,14 @@ import { UserButton, useUser } from "@clerk/nextjs";
 import styles from "@/styles/chat.module.css";
 import SatisfactionForm from "@/components/satisfaction-form";
 import Modal from "@/components/modal";
+import UserDataModal from "@/components/user-data-modal";
 import { FaStar } from "react-icons/fa";
 import {
   saveUserMessage,
   saveAssistantMessage,
   registerChatEntrance,
+  checkUserDataComplete,
+  updateChatEmotion
 } from "@/actions/chat-actions";
 
 import {
@@ -42,6 +45,11 @@ export default function Chat({chatId: initialChatId, isSatisfactionRating}: chat
   const [showSatisfactionModal, setShowSatisfactionModal] = useState(false);
   const [isSatisfactionRatingState, setIsSatisfactionRatingState] = useState(isSatisfactionRating);
   const [currentChatId, setCurrentChatId] = useState(initialChatId);
+  
+  // Estados para verificación de datos del usuario
+  const [showUserDataModal, setShowUserDataModal] = useState(false);
+  const [userDataComplete, setUserDataComplete] = useState(true); // Iniciar como true para evitar flash
+  const [isCheckingUserData, setIsCheckingUserData] = useState(true);
   
   // Estados para audio
   const [isRecording, setIsRecording] = useState(false);
@@ -95,6 +103,31 @@ export default function Chat({chatId: initialChatId, isSatisfactionRating}: chat
 
     initializeChat();
   }, [user?.id, currentChatId]);
+
+  // Verificar datos del usuario
+  useEffect(() => {
+    const checkUserDataStatus = async () => {
+      if (!user?.id) return;
+      
+      try {
+        setIsCheckingUserData(true);
+        const { isComplete } = await checkUserDataComplete();
+        setUserDataComplete(isComplete);
+        
+        if (!isComplete) {
+          setShowUserDataModal(true);
+        }
+      } catch (error) {
+        console.error('Error verificando datos del usuario:', error);
+        // En caso de error, asumir que los datos están completos para no bloquear
+        setUserDataComplete(true);
+      } finally {
+        setIsCheckingUserData(false);
+      }
+    };
+
+    checkUserDataStatus();
+  }, [user?.id]);
   
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -104,7 +137,17 @@ export default function Chat({chatId: initialChatId, isSatisfactionRating}: chat
     scrollToBottom();
   }, [messages, isLoading]);
 
+  const handleUserDataComplete = () => {
+    setUserDataComplete(true);
+    setShowUserDataModal(false);
+  };
+
   const startRecording = async () => {
+    if (!userDataComplete) {
+      setShowUserDataModal(true);
+      return;
+    }
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
@@ -167,6 +210,11 @@ export default function Chat({chatId: initialChatId, isSatisfactionRating}: chat
       const { text } = await response.json();
       
       if (text.trim()) {
+        if (!userDataComplete) {
+          setShowUserDataModal(true);
+          return;
+        }
+
         // Guardar mensaje del usuario antes de enviarlo
         await handleUserMessage(text);
         
@@ -229,6 +277,11 @@ export default function Chat({chatId: initialChatId, isSatisfactionRating}: chat
   };
 
   const handleUserMessage = async (content: string) => {
+    if (!userDataComplete) {
+      setShowUserDataModal(true);
+      return;
+    }
+
     if (!currentChatId) {
       console.error('No hay chat ID disponible');
       return;
@@ -241,7 +294,30 @@ export default function Chat({chatId: initialChatId, isSatisfactionRating}: chat
     }
   };
 
-  const handleSuggestionClick = async (suggestionText: string) => {
+  const handleSuggestionClick = async (suggestionText: string, suggestionTitle: string) => {
+    if (!userDataComplete) {
+      setShowUserDataModal(true);
+      return;
+    }
+
+    // Extraer la emoción del título (eliminar el emoji y espacios)
+    const emotion = suggestionTitle.replace(/^[^\s]+\s+/, '').trim();
+
+    if (!currentChatId) {
+      try {
+        const { chat } = await registerChatEntrance(emotion);
+        setCurrentChatId(chat.id);
+      } catch (error) {
+        console.error('Error inicializando chat:', error);
+      }
+    } else {
+      try {
+        await updateChatEmotion(currentChatId, emotion);
+      } catch (error) {
+        console.error('Error actualizando emoción:', error);
+      }
+    }
+
     await handleUserMessage(suggestionText);
     
     append({
@@ -255,6 +331,11 @@ export default function Chat({chatId: initialChatId, isSatisfactionRating}: chat
     
     if (!input.trim() || isLoading) return;
 
+    if (!userDataComplete) {
+      setShowUserDataModal(true);
+      return;
+    }
+
     const messageContent = input.trim();
     
     await handleUserMessage(messageContent);
@@ -264,6 +345,11 @@ export default function Chat({chatId: initialChatId, isSatisfactionRating}: chat
 
   const handleSendMessage = () => {
     if (!input.trim() || isLoading) return;
+    
+    if (!userDataComplete) {
+      setShowUserDataModal(true);
+      return;
+    }
     
     const form = textareaRef.current?.closest('form');
     if (form) {
@@ -288,6 +374,18 @@ export default function Chat({chatId: initialChatId, isSatisfactionRating}: chat
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
+
+  // Mostrar loading mientras verifica datos del usuario
+  if (isCheckingUserData) {
+    return (
+      <section className={styles.chatContainer}>
+        <div className={styles.loadingContainer}>
+          <div className={styles.loadingSpinner}></div>
+          <p>Cargando...</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className={styles.chatContainer}>
@@ -343,7 +441,7 @@ export default function Chat({chatId: initialChatId, isSatisfactionRating}: chat
                 <div
                   key={index}
                   className={styles.suggestionCard}
-                  onClick={() => handleSuggestionClick(suggestion.text)}
+                  onClick={() => handleSuggestionClick(suggestion.text, suggestion.title)}
                 >
                   <h4>{suggestion.title}</h4>
                   <p>{suggestion.subtitle}</p>
@@ -437,6 +535,12 @@ export default function Chat({chatId: initialChatId, isSatisfactionRating}: chat
           </div>
         )}
       </Modal>
+
+      <UserDataModal
+        isOpen={showUserDataModal}
+        onClose={() => setShowUserDataModal(false)}
+        onComplete={handleUserDataComplete}
+      />
 
       {(isRecording || isTranscribing || isSpeaking) && (
         <div className={styles.audioStatus}>

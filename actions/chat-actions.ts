@@ -3,7 +3,7 @@
 import { db } from '@/lib/db'
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from 'next/cache'
-import { MessageRole } from '@prisma/client'
+import { MessageRole, User } from '@prisma/client'
 
 export async function ensureUser() {
   const { userId } = await auth()
@@ -28,7 +28,7 @@ export async function ensureUser() {
   return user
 }
 
-export async function registerChatEntrance() {
+export async function registerChatEntrance(emotion?: string) {
   try {
     const user = await ensureUser()
     
@@ -53,8 +53,14 @@ export async function registerChatEntrance() {
         data: {
           userId: user.id,
           title: 'Nueva conversación',
-          isActive: true
+          isActive: true,
+          emotion: emotion 
         }
+      })
+    } else if (emotion) {
+      chat = await db.chat.update({
+        where: { id: chat.id },
+        data: { emotion }
       })
     }
 
@@ -385,5 +391,215 @@ export async function getActiveUsersChartData(days: number = 7) {
   } catch (error) {
     console.error('Error obteniendo datos de usuarios activos:', error)
     throw new Error('Error al obtener datos de usuarios activos')
+  }
+}
+
+export async function updateUserData(userData: {
+  career?: string;
+  birthDate?: string;
+  gender?: string;
+}) {
+  try {
+    const user = await ensureUser();
+    
+    const updateData: Partial<User> = {};
+    
+    if (userData.career) {
+      updateData.career = userData.career;
+    }
+    
+    if (userData.birthDate) {
+      updateData.birthDate = new Date(userData.birthDate);
+    }
+    
+    if (userData.gender) {
+      updateData.gender = userData.gender;
+    }
+    
+    const updatedUser = await db.user.update({
+      where: { id: user.id },
+      data: updateData
+    });
+    
+    revalidatePath('/chat');
+    return updatedUser;
+  } catch (error) {
+    console.error('Error actualizando datos del usuario:', error);
+    throw new Error('Error al actualizar datos del usuario');
+  }
+}
+
+export async function checkUserDataComplete() {
+  try {
+    const user = await ensureUser();
+
+    const isComplete = user.career && user.birthDate && user.gender;
+    
+    return {
+      isComplete: !!isComplete,
+      user: {
+        career: user.career,
+        birthDate: user.birthDate,
+        gender: user.gender
+      }
+    };
+  } catch (error) {
+    console.error('Error verificando datos del usuario:', error);
+    throw new Error('Error al verificar datos del usuario');
+  }
+}
+
+export async function getGenderUsageStats() {
+  try {
+    // Get all users with their gender and message counts
+    const users = await db.user.findMany({
+      where: {
+        gender: {
+          not: null
+        }
+      },
+      include: {
+        chats: {
+          include: {
+            messages: true
+          }
+        }
+      }
+    });
+
+    // Calculate average messages per gender
+    const genderStats = users.reduce((acc, user) => {
+      const gender = user.gender || 'unknown';
+      if (!acc[gender]) {
+        acc[gender] = {
+          totalMessages: 0,
+          userCount: 0
+        };
+      }
+      // Count messages across all chats
+      const messageCount = user.chats.reduce((total, chat) => total + chat.messages.length, 0);
+      acc[gender].totalMessages += messageCount;
+      acc[gender].userCount += 1;
+      return acc;
+    }, {} as Record<string, { totalMessages: number; userCount: number }>);
+
+    // Calculate averages and format for chart
+    const chartData = Object.entries(genderStats).map(([gender, stats]) => ({
+      time: gender,
+      value: stats.userCount > 0 ? stats.totalMessages / stats.userCount : 0
+    }));
+
+    return chartData;
+  } catch (error) {
+    console.error('Error getting gender usage stats:', error);
+    throw new Error('Error al obtener estadísticas de uso por género');
+  }
+}
+
+export async function getCareerUsageStats() {
+  try {
+    // Get all users with their career and message counts
+    const users = await db.user.findMany({
+      where: {
+        career: {
+          not: null
+        }
+      },
+      include: {
+        chats: {
+          include: {
+            messages: true
+          }
+        }
+      }
+    });
+
+    // Calculate average messages per career
+    const careerStats = users.reduce((acc, user) => {
+      const career = user.career || 'unknown';
+      if (!acc[career]) {
+        acc[career] = {
+          totalMessages: 0,
+          userCount: 0
+        };
+      }
+      // Count messages across all chats
+      const messageCount = user.chats.reduce((total, chat) => total + chat.messages.length, 0);
+      acc[career].totalMessages += messageCount;
+      acc[career].userCount += 1;
+      return acc;
+    }, {} as Record<string, { totalMessages: number; userCount: number }>);
+
+    // Calculate averages and format for chart
+    const chartData = Object.entries(careerStats).map(([career, stats]) => ({
+      time: career,
+      value: stats.userCount > 0 ? stats.totalMessages / stats.userCount : 0
+    }));
+
+    return chartData;
+  } catch (error) {
+    console.error('Error getting career usage stats:', error);
+    throw new Error('Error al obtener estadísticas de uso por carrera');
+  }
+}
+
+export async function updateChatEmotion(chatId: string, emotion: string) {
+  try {
+    const user = await ensureUser();
+    
+    const chat = await db.chat.findFirst({
+      where: {
+        id: chatId,
+        userId: user.id
+      }
+    });
+
+    if (!chat) {
+      throw new Error('Chat no encontrado o no autorizado');
+    }
+
+    const updatedChat = await db.chat.update({
+      where: { id: chatId },
+      data: { emotion }
+    });
+
+    return updatedChat;
+  } catch (error) {
+    console.error('Error actualizando emoción del chat:', error);
+    throw new Error('Error al actualizar emoción del chat');
+  }
+}
+
+export async function getMostCommonEmotion(): Promise<{ emotion: string; count: number; } | null> {
+  try {
+    const emotions = await db.chat.groupBy({
+      by: ['emotion'],
+      where: {
+        emotion: {
+          not: null
+        }
+      },
+      _count: {
+        emotion: true
+      },
+      orderBy: {
+        _count: {
+          emotion: 'desc'
+        }
+      },
+      take: 1
+    });
+
+    if (emotions.length === 0 || !emotions[0].emotion) {
+      return null;
+    }
+
+    return {
+      emotion: emotions[0].emotion,
+      count: emotions[0]._count.emotion
+    };
+  } catch (error) {
+    console.error('Error getting most common emotion:', error);
+    throw new Error('Error al obtener la emoción más común');
   }
 }

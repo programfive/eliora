@@ -10,11 +10,11 @@ import {
   FiActivity,
   FiTrendingUp,
   FiHeart,
-  FiRefreshCw
+  FiRefreshCw,
 } from 'react-icons/fi'
 import { redirect } from 'next/navigation'
 import styles from '@/styles/stats.module.css'
-import { getChatStats, getActiveUsersChartData } from '@/actions/chat-actions'
+import { getChatStats, getActiveUsersChartData, getGenderUsageStats, getCareerUsageStats, getMostCommonEmotion } from '@/actions/chat-actions'
 import { useUser } from '@clerk/nextjs'
 import StatsChart from '@/components/stats-chart'
 
@@ -32,12 +32,27 @@ interface StatsData {
     empathy: number
     clarity: number
   }
+  mostCommonEmotion?: {
+    emotion: string
+    count: number
+  } | null
 }
 
 interface ChartDataPoint {
   time: string
   value: number
 }
+
+const emotionEmojis: { [key: string]: string } = {
+  'Muy bien / Excelente': '😊',
+  'Normal / Regular': '😐',
+  'Triste / Decaído': '😔',
+  'Ansioso / Preocupado': '😰',
+  'Enojado / Frustrado': '😡',
+  'Cansado / Agotado': '😴',
+  'Confundido / Perdido': '😕',
+  'Relajado / Tranquilo': '😌'
+};
 
 export default function ChatStats() {
   const { user } = useUser()
@@ -49,6 +64,8 @@ export default function ChatStats() {
 
   const [stats, setStats] = useState<StatsData | null>(null)
   const [chartData, setChartData] = useState<ChartDataPoint[]>([])
+  const [genderStats, setGenderStats] = useState<ChartDataPoint[]>([])
+  const [careerStats, setCareerStats] = useState<ChartDataPoint[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [refreshing, setRefreshing] = useState(false)
@@ -63,8 +80,22 @@ export default function ChatStats() {
       // Obtener datos reales del gráfico
       const realChartData = await getActiveUsersChartData(7)
       
-      setStats(statsData)
+      // Obtener estadísticas de uso por género
+      const genderData = await getGenderUsageStats()
+      
+      // Obtener estadísticas de uso por carrera
+      const careerData = await getCareerUsageStats()
+
+      // Obtener la emoción más común
+      const mostCommonEmotion = await getMostCommonEmotion()
+      
+      setStats({
+        ...statsData,
+        mostCommonEmotion
+      })
       setChartData(realChartData)
+      setGenderStats(genderData)
+      setCareerStats(careerData)
     } catch (err) {
       console.error('Error cargando datos:', err)
       setError('Error al cargar las estadísticas')
@@ -78,6 +109,8 @@ export default function ChatStats() {
     setLoading(true)
     fetchAllData()
   }, [])
+
+
 
   const handleRefresh = async () => {
     setRefreshing(true)
@@ -193,6 +226,27 @@ export default function ChatStats() {
           <h4>Usuarios Activos Este Año</h4>
           <p className={styles.statNumber}>{formatNumber(stats.activeUsersThisYear)}</p>
         </div>
+
+        <div className={styles.statCard}>
+          <h4>Emoción más común</h4>
+          <p >
+            {stats.mostCommonEmotion ? (
+              <div className={styles.emotionDisplay}>
+                <span style={{fontSize:"3.15rem"}} >
+                  {emotionEmojis[stats.mostCommonEmotion.emotion] || '😊'}
+                </span>
+                <span style={{fontSize:"1.15rem"}} className={styles.emotionText}>
+                  {stats.mostCommonEmotion.emotion}
+                </span>
+                <span className={styles.emotionCount}>
+                  {formatNumber(stats.mostCommonEmotion.count)} veces
+                </span>
+              </div>
+            ) : (
+              'No hay datos'
+            )}
+          </p>
+        </div>
       </div>
 
       {/* Gráfico de usuarios activos con datos reales */}
@@ -201,6 +255,22 @@ export default function ChatStats() {
         title="Usuarios Activos por Día (Última Semana)"
         color="#2563eb"
       />
+
+      <StatsChart
+        data={genderStats}
+        title="Promedio de uso por hombres y mujeres"
+        color="#2563eb"
+        isBarChart={true}
+      />
+
+      <StatsChart
+        data={careerStats}
+        title="Promedio de uso por carrera"
+        color="#2563eb"
+        isBarChart={true}
+      />
+
+      
 
       {/* Estadísticas de satisfacción */}
       <div className={styles.satisfactionSection}>
@@ -235,6 +305,8 @@ export default function ChatStats() {
           </div>
         </div>
       </div>
+
     </div>
   )
 }
+
